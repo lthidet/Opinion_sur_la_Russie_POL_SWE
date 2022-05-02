@@ -1,0 +1,202 @@
+---
+metadata title: "Enquête d’opinion : l’avis des populations suédoises et polonaises sur la Russie"
+author: "Louis THIDET et Lucie DELAY"
+date: '2022-04-26'
+output:
+  html_document
+      
+---
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = TRUE, warning = FALSE)
+
+# chargement des packages
+library(dplyr)
+library(knitr)
+library(questionr)
+
+### chargement du fichier de données
+don<-readRDS("data/Pew_2007_2017.Rdata")
+```
+<h4>Louis THIDET et Lucie DELAY</h4>
+
+<center> <h2>ENQUETE D'OPINION</h2> </center>
+<center> <h3>**Pew Research Center**</h3> </center>
+<center> <h2> L’avis des populations suédoises et polonaises sur la Russie</h2> </center>
+
+<br>
+
+### **H1 : Est-ce que l’opinion des Polonais et l’opinion des Suédois envers la Russie se sont toutes deux dégradées entre 2007 et 2017**
+
+#### <span style="color:brown">H1.1 : Est-ce que l’opinion des Polonais sur la Russie s’est dégradée entre 2007 et 2017 ?</span>
+```{r}
+# tableau de données de la Pologne
+sel<-don[don$country%in%c("Poland"),]
+
+table(sel$opi_RUS)
+
+# recodage des réponses "Somewhat" et "Very" en une seule réponse possible
+sel$opi_RUS2<-sel$opi_RUS
+levels(sel$opi_RUS2)<-c("Favorable","Favorable","Défavorable","Défavorable",NA,NA)
+
+# tableau de contingence pondéré (nécessaire pour les enquêtes par sondage)
+tab<-wtd.table(x=sel$survey, y=sel$opi_RUS2, weights=sel$weight)
+tab
+
+# pourcentages en ligne
+kable(lprop(tab),digits=1, caption = "Opinion sur la Russie en Pologne en 2007 et 2017 (en %)")
+
+# test du khi2
+model<-chisq.test(tab)
+model
+
+# graphique du tableau de contingence pondéré
+plot(tab, col=c("green","red"),main="Opinion sur la Russie en Pologne en 2007 et 2017")
+```
+
+#### <span style="color:brown">H1.2 : Est-ce que l’opinion des Suédois sur la Russie s’est dégradée entre 2007 et 2017 ?</span>
+```{r}
+# tableau de données de la Suède
+sel<-don[don$country %in% c("Sweden") ,]
+
+table(sel$opi_RUS)
+
+# recodage des réponses "Somewhat" et "Very" en une seule réponse possible
+sel$opi_RUS2<-sel$opi_RUS
+levels(sel$opi_RUS2)<-c("Favorable","Favorable","Defavorable","Defavorable",NA,NA)
+
+# tableau de contingence pondéré (nécessaire pour les enquêtes par sondage)
+tab<-wtd.table(x=sel$survey, y=sel$opi_RUS2, weight =sel$weight)
+tab
+
+# pourcentages en ligne
+kable(lprop(tab),digits=1, caption = "Opinion sur la Russie en Suède en 2007 et 2017 (en %)")
+
+# test du khi2
+model<-chisq.test(tab)
+model
+
+# graphique du tableau de contingence pondéré
+plot(tab, col=c("green","red"),main="Opinion sur la Russie en Suède en 2007 et 2017")
+```
+
+### **H2 : Est-ce qu’il y a une plus forte évolution de l’opinion défavorable envers la Russie en Pologne qu’en Suède de 2007 à 2017 ?**
+
+#### <span style="color:brown">H2.1 : Est-ce que les Polonais sont plus défavorables que la Suède à la Russie en 2007 ?</span>
+```{r}
+# tableau de données Pologne-Suède pour 2007
+sel<-don[don$country%in%c("Poland","Sweden") & don$survey=="Spring2007",]
+sel$country<-as.factor(as.character(sel$country))
+
+table(sel$opi_RUS)
+
+# recodage des réponses "Somewhat" et "Very" en une seule réponse possible
+sel$opi_RUS2<-sel$opi_RUS
+levels(sel$opi_RUS2)<-c("Favorable","Favorable","Défavorable","Défavorable",NA,NA)
+
+# tableau de contingence pondéré (nécessaire pour les enquêtes par sondage)
+tab<-wtd.table(x=sel$country, y=sel$opi_RUS2, weights=sel$weight)
+tab
+
+# pourcentages en ligne
+kable(lprop(tab),digits=1, caption = "Opinion sur la Russie en Pologne et en Suède en 2007 (en %)")
+
+# test du khi2
+model<-chisq.test(tab)
+model
+
+# graphique du tableau de contingence pondéré
+plot(tab, col=c("green","red"),main="Opinion sur la Russie en Pologne et en Suède en 2007")
+```
+
+#### <span style="color:brown">H2.2 : Est-ce que les Polonais sont plus défavorables que la Suède à la Russie en 2017 ? </span>
+```{r}
+# tableau de données Pologne-Suède pour 2017
+sel<-don[don$country%in%c("Poland","Sweden") & don$survey=="Spring2017",]
+sel$country<-as.factor(as.character(sel$country))
+
+table(sel$opi_RUS)
+
+# recodage des réponses "Somewhat" et "Very" en une seule réponse possible
+sel$opi_RUS2<-sel$opi_RUS
+levels(sel$opi_RUS2)<-c("Favorable","Favorable","Défavorable","Défavorable",NA,NA)
+
+# tableau de contingence pondéré (nécessaire pour les enquêtes par sondage)
+tab<-wtd.table(x=sel$country, y=sel$opi_RUS2, weights=sel$weight)
+tab
+
+# pourcentages en ligne
+kable(lprop(tab),digits=1, caption = "Opinion sur la Russie en Pologne et en Suède en 2017 (en %)")
+
+# test du khi2
+model<-chisq.test(tab)
+model
+
+# graphique du tableau de contingence pondéré
+plot(tab, col=c("green","red"),main="Opinion sur la Russie en Pologne et en Suède en 2017")
+```
+
+### **H3 : Y a-t-il une proximité de l’opinion polonaise et suédoise en fonction de la génération d’appartenance ?**
+
+```{r}
+# tableau de données de la Pologne
+sel<-don[don$country%in%c("Poland") & don$survey=="Spring2017",]
+sel$country<-as.factor(as.character(sel$country))
+
+# variable des générations
+sel$generation <- cut(sel$age,breaks = c(0,35,51,70,97))
+levels(sel$generation)<-c("Millenials","Generation X","Boomers","Silent")
+
+table(sel$generation)
+
+# recodage des réponses en français et élimination des variables "Don't know" et "Refused"
+sel$opi_RUS2<-sel$opi_RUS
+levels(sel$opi_RUS2)<-c("Très favorable","Assez favorable","Assez défavorable","Très défavorable",NA,NA)
+
+# tableau de contingence pondéré (nécessaire pour les enquêtes par sondage)
+tab<-wtd.table(x=sel$generation, y=sel$opi_RUS2, weights=sel$weight)
+tab
+
+# pourcentages en ligne
+kable(lprop(tab),digits=1, caption = "Opinion sur la Russie en Pologne par génération en 2017 (en %)")
+
+# test du khi2
+model<-chisq.test(tab)
+model
+
+# graphique du tableau de contingence pondéré
+plot(tab, col=c("chartreuse4","chartreuse3","firebrick1","firebrick"),main="Opinion sur la Russie en Pologne par génération en 2017", las=1)
+```
+
+```{r}
+# tableau de données de la Suède
+
+sel<-don[don$country%in%c("Sweden") & don$survey=="Spring2017",]
+sel$country<-as.factor(as.character(sel$country))
+
+# variable des générations
+sel$generation <- cut(sel$age,breaks = c(0,35,51,70,97))
+levels(sel$generation)<-c("Millenials","Generation X","Boomers","Silent")
+
+table(sel$generation)
+
+# recodage des réponses en français et élimination des variables "Don't know" et "Refused"
+sel$opi_RUS2<-sel$opi_RUS
+levels(sel$opi_RUS2)<-c("Très favorable","Assez favorable","Assez défavorable","Très défavorable",NA,NA)
+
+# tableau de contingence pondéré (nécessaire pour les enquêtes par sondage)
+tab<-wtd.table(x=sel$generation, y=sel$opi_RUS2, weights=sel$weight)
+tab
+
+# pourcentages en ligne
+kable(lprop(tab),digits=1, caption = "Opinion sur la Russie en Suède par génération en 2017 (en %)")
+
+# test du khi2
+model<-chisq.test(tab)
+model
+
+# graphique du tableau de contingence pondéré
+plot(tab, col=c("chartreuse4","chartreuse3","firebrick1","firebrick"),main="Opinion sur la Russie en Suède par génération en 2017", las=1)
+```
+
+

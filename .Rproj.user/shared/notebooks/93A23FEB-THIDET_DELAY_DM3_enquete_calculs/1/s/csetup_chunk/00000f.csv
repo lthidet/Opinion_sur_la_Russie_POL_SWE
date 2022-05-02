@@ -1,0 +1,23 @@
+"0","knitr::opts_chunk$set(echo = TRUE)"
+"0",""
+"0","# chargement des packages"
+"0","library(dplyr)"
+"2","
+Attachement du package : ‘dplyr’
+
+"
+"2","Les objets suivants sont masqués depuis ‘package:stats’:
+
+    filter, lag
+
+"
+"2","Les objets suivants sont masqués depuis ‘package:base’:
+
+    intersect, setdiff, setequal, union
+
+"
+"0","library(knitr)"
+"0","library(questionr)"
+"0",""
+"0","### chargement du fichier de données"
+"0","don<-readRDS(""data/Pew_2007_2017.Rdata"")"
